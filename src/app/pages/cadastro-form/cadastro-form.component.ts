@@ -5,6 +5,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { RadioOptionComponent } from '../../shared/components/radio-option/radio-option.component';
 import { ExperienceLevelComponent } from '../../shared/components/experience-level/experience-level.component';
 import { Router } from '@angular/router';
+import { CadastroService } from '../../shared/services/cadastro.service';
 
 const MODULES = [
   CommonModule,
@@ -56,7 +57,13 @@ export class CadastroFormComponent implements OnInit {
       description: '(6 anos ou mais)'
     }
   ];
-  constructor(private fb: FormBuilder, private router: Router) { }
+  
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router,
+    private cadastroService: CadastroService
+  ) { }
+
   ngOnInit(): void {
     this.cadastroForm = this.fb.group({
       areaAtuacao: ['', Validators.required],
