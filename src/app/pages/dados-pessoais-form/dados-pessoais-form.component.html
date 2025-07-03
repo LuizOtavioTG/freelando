@@ -12,13 +12,25 @@
 
         <div class="cadastro-form__field">
           <label for="nomeCompleto" class="cadastro-form__label">Nome Completo</label>
-          <input id="nomeCompleto" type="text" class="cadastro-form__input" formControlName="nomeCompleto">
+          <input id="nomeCompleto" type="text" class="cadastro-form__input" formControlName="nomeCompleto" placeholder="Nome">
           @if (dadosPessoaisForm.get('nomeCompleto')?.invalid && dadosPessoaisForm.get('nomeCompleto')?.touched) {
           <div class="cadastro-form__error">
             Nome completo é obrigatório.
           </div>
           }
         </div>
+
+        <div class="cadastro-form__field">
+          <label for="cpf" class="cadastro-form__label">CPF</label>
+          <small class="small">Digite somente os números.</small>
+          <input id="cpf" type="text" class="cadastro-form__input" placeholder="000.000.000-00" formControlName="cpf" maxlength="11">
+          <div *ngIf="dadosPessoaisForm.get('cpf')?.invalid && dadosPessoaisForm.get('cpf')?.touched"
+              class="cadastro-form__error">
+              <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['required']">CPF é obrigatório. </span>
+              <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['cpfInvalido']">CPF é inválido.</span>
+            </div>
+        </div>
+
         <div class="cadastro-form__row">
           <div class="cadastro-form__field cadastro-form__field--half">
             <label l for="estado" class="cadastro-form__label">
@@ -27,9 +39,9 @@
             <select id="estado" class="cadastro-form__input" formControlName="estado">
               <option value="" disabled selected>Selecione</option>
               @if (estado$ | async; as estados) {
-                @for (estado of estados; track $index) {
-                <option [value]="estado.sigla">{{ estado.nome }}</option>
-                }
+              @for (estado of estados; track $index) {
+              <option [value]="estado.sigla">{{ estado.nome }}</option>
+              }
               }
             </select>
             @if (dadosPessoaisForm.get('estado')?.invalid && dadosPessoaisForm.get('estado')?.touched) {
@@ -40,15 +52,13 @@
           </div>
           <div class="cadastro-form__field cadastro-form__field--half">
             <label for="cidade" class="cadastro-form__label">Cidade</label>
-            <select
-              id="cidade"
-              class="cadastro-form__select"
-              formControlName="cidade">
-              <option value="" disabled selected>{{ (carregandoCidades$ | async) ? 'Carregando...' : 'Selecione' }}</option>
+            <select id="cidade" class="cadastro-form__select" formControlName="cidade">
+              <option value="" disabled selected>{{ (carregandoCidades$ | async) ? 'Carregando...' : 'Selecione' }}
+              </option>
               @if (cidade$ | async; as cidades) {
-                @for (cidade of cidades; track $index) {
-                <option [value]="cidade.nome">{{ cidade.nome }}</option>
-                }
+              @for (cidade of cidades; track $index) {
+              <option [value]="cidade.nome">{{ cidade.nome }}</option>
+              }
               }
             </select>
             @if (dadosPessoaisForm.get('cidade')?.invalid && dadosPessoaisForm.get('cidade')?.touched) {
@@ -61,7 +71,7 @@
 
         <div class="cadastro-form__field ">
           <label for="email" class="cadastro-form__label">E-mail</label>
-          <input id="email" type="text" class="cadastro-form__input" formControlName="email">
+          <input id="email" type="text" class="cadastro-form__input" formControlName="email" placeholder="E-mail">
           @if (dadosPessoaisForm.get('email')?.invalid && dadosPessoaisForm.get('email')?.touched) {
           <div class="cadastro-form__error">
             <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['required']">Email é obrigatório</span>
@@ -73,7 +83,7 @@
         <div class="cadastro-form__row">
           <div class="cadastro-form__field cadastro-form__field--half">
             <label for="senha" class="cadastro-form__label">Senha</label>
-            <input id="senha" type="password" class="cadastro-form__input" formControlName="senha">
+            <input id="senha" type="password" class="cadastro-form__input" formControlName="senha" placeholder="Senha">
             <div *ngIf="dadosPessoaisForm.get('senha')?.invalid && dadosPessoaisForm.get('senha')?.touched"
               class="cadastro-form__error">
               <span *ngIf="dadosPessoaisForm.get('senha')?.errors?.['required']">Senha é obrigatória</span>
@@ -84,7 +94,7 @@
 
           <div class="cadastro-form__field cadastro-form__field--half">
             <label for="confirmaSenha" class="cadastro-form__label">Repita a senha</label>
-            <input id="confirmaSenha" type="password" class="cadastro-form__input" formControlName="confirmaSenha">
+            <input id="confirmaSenha" type="password" class="cadastro-form__input" formControlName="confirmaSenha" placeholder="Senha">
             <div
               *ngIf="dadosPessoaisForm.get('confirmaSenha')?.invalid && dadosPessoaisForm.get('confirmaSenha')?.touched"
               class="cadastro-form__error">
