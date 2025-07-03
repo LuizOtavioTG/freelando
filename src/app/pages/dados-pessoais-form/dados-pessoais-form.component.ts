@@ -4,6 +4,8 @@ import { AbstractControl, AbstractControlOptions, FormBuilder, FormGroup, Reacti
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { Router } from '@angular/router';
 import { CadastroService } from '../../shared/services/cadastro.service';
+import { BehaviorSubject, Observable, of, startWith, switchMap, tap } from 'rxjs';
+import { Cidade, Estado, IbgeService } from '../../shared/services/ibge.service';
 
 
 export const senhasIguaisValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -21,7 +23,7 @@ export const senhasIguaisValidator: ValidatorFn = (control: AbstractControl): Va
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ButtonComponent
+    ButtonComponent,
   ],
   templateUrl: './dados-pessoais-form.component.html',
   styleUrls: ['./dados-pessoais-form.component.scss']
@@ -29,41 +31,18 @@ export const senhasIguaisValidator: ValidatorFn = (control: AbstractControl): Va
 export class DadosPessoaisFormComponent implements OnInit {
   dadosPessoaisForm!: FormGroup;
 
-  estados = [
-    { sigla: 'AC', nome: 'Acre' },
-    { sigla: 'AL', nome: 'Alagoas' },
-    { sigla: 'AP', nome: 'Amapá' },
-    { sigla: 'AM', nome: 'Amazonas' },
-    { sigla: 'BA', nome: 'Bahia' },
-    { sigla: 'CE', nome: 'Ceará' },
-    { sigla: 'DF', nome: 'Distrito Federal' },
-    { sigla: 'ES', nome: 'Espírito Santo' },
-    { sigla: 'GO', nome: 'Goiás' },
-    { sigla: 'MA', nome: 'Maranhão' },
-    { sigla: 'MT', nome: 'Mato Grosso' },
-    { sigla: 'MS', nome: 'Mato Grosso do Sul' },
-    { sigla: 'MG', nome: 'Minas Gerais' },
-    { sigla: 'PA', nome: 'Pará' },
-    { sigla: 'PB', nome: 'Paraíba' },
-    { sigla: 'PR', nome: 'Paraná' },
-    { sigla: 'PE', nome: 'Pernambuco' },
-    { sigla: 'PI', nome: 'Piauí' },
-    { sigla: 'RJ', nome: 'Rio de Janeiro' },
-    { sigla: 'RN', nome: 'Rio Grande do Norte' },
-    { sigla: 'RS', nome: 'Rio Grande do Sul' },
-    { sigla: 'RO', nome: 'Rondônia' },
-    { sigla: 'RR', nome: 'Roraima' },
-    { sigla: 'SC', nome: 'Santa Catarina' },
-    { sigla: 'SP', nome: 'São Paulo' },
-    { sigla: 'SE', nome: 'Sergipe' },
-    { sigla: 'TO', nome: 'Tocantins' }
-  ]
+  estado$!: Observable<Estado[]>;
+  cidade$!: Observable<Cidade[]>;
+
+  carregandoCidades$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private cadastroService: CadastroService
+    private cadastroService: CadastroService,
+    private ibgeService: IbgeService
   ) { }
+
   ngOnInit(): void {
     const formOptions: AbstractControlOptions = {
       validators: senhasIguaisValidator
@@ -71,11 +50,14 @@ export class DadosPessoaisFormComponent implements OnInit {
     this.dadosPessoaisForm = this.fb.group({
       nomeCompleto: ['', Validators.required],
       estado: ['', Validators.required],
-      cidade: ['', Validators.required],
+      cidade: [{ value: '', disabled: true }, Validators.required],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]],
       confirmaSenha: ['', Validators.required]
-    },formOptions);
+    }, formOptions);
+
+    this.carregarEstados();
+    this.configurarListenerEstado();
   }
   onAnterior(): void {
     this.salvarDadosAtuais();
@@ -99,6 +81,43 @@ export class DadosPessoaisFormComponent implements OnInit {
     } else {
       this.dadosPessoaisForm.markAllAsTouched();
     }
+  }
+
+  private carregarEstados(): void {
+    this.estado$ = this.ibgeService.getEstados();
+  }
+
+  private configurarListenerEstado(): void {
+  const estadoControl = this.dadosPessoaisForm.get('estado');
+  const cidadeControl = this.dadosPessoaisForm.get('cidade');
+
+  if (estadoControl && cidadeControl) {
+    this.cidade$ = estadoControl.valueChanges.pipe(
+      startWith(''),
+      tap(() => {
+        this.resetarCidade();
+        cidadeControl.disable();
+        this.carregandoCidades$.next(true);
+      }),
+      switchMap(uf => {
+        if (uf) {
+          return this.ibgeService.getCidadesPorEstado(uf).pipe(
+            tap(() => {
+              cidadeControl.enable();
+              this.carregandoCidades$.next(false);
+            })
+          );
+        }
+
+        this.carregandoCidades$.next(false);
+        return of([]);
+      })
+    );
+  }
+}
+
+  private resetarCidade(): void {
+    this.dadosPessoaisForm.get('cidade')?.setValue('');
   }
 
 }

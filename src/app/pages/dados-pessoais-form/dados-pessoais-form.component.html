@@ -26,8 +26,10 @@
             </label>
             <select id="estado" class="cadastro-form__input" formControlName="estado">
               <option value="" disabled selected>Selecione</option>
-              @for (estado of estados; track $index) {
-              <option [value]="estado.sigla">{{estado.nome}}</option>
+              @if (estado$ | async; as estados) {
+                @for (estado of estados; track $index) {
+                <option [value]="estado.sigla">{{ estado.nome }}</option>
+                }
               }
             </select>
             @if (dadosPessoaisForm.get('estado')?.invalid && dadosPessoaisForm.get('estado')?.touched) {
@@ -38,7 +40,17 @@
           </div>
           <div class="cadastro-form__field cadastro-form__field--half">
             <label for="cidade" class="cadastro-form__label">Cidade</label>
-            <input id="cidade" type="text" class="cadastro-form__input" formControlName="cidade">
+            <select
+              id="cidade"
+              class="cadastro-form__select"
+              formControlName="cidade">
+              <option value="" disabled selected>{{ (carregandoCidades$ | async) ? 'Carregando...' : 'Selecione' }}</option>
+              @if (cidade$ | async; as cidades) {
+                @for (cidade of cidades; track $index) {
+                <option [value]="cidade.nome">{{ cidade.nome }}</option>
+                }
+              }
+            </select>
             @if (dadosPessoaisForm.get('cidade')?.invalid && dadosPessoaisForm.get('cidade')?.touched) {
             <div class="cadastro-form__error">
               Cidade é obrigatória.
