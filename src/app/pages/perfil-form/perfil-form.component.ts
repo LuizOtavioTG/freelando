@@ -69,8 +69,9 @@ export class PerfilFormComponent implements OnInit {
     }
   }
 
-  onFotoSelecionada(event: any): void {
-    const file = event.target.files[0];
+  onFotoSelecionada(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -78,7 +79,15 @@ export class PerfilFormComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
-}
+  }
+  
+   toggleHabilidade(habilidade: Habilidade): void {
+    habilidade.selecionada = !habilidade.selecionada;
+
+    const habilidadesSelecionadas = this.habilidades.filter(h => h.selecionada).map(h => h.nome);
+
+    this.perfilForm.patchValue({ habilidadesSelecionadas });
+  }
 
   // adicionarIdioma(nome: string = '', nivel: string = ''): void {
   //   const idiomaForm = this.fb.group({
