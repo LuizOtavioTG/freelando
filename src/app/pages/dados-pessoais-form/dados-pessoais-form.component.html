@@ -12,7 +12,8 @@
 
         <div class="cadastro-form__field">
           <label for="nomeCompleto" class="cadastro-form__label">Nome Completo</label>
-          <input id="nomeCompleto" type="text" class="cadastro-form__input" formControlName="nomeCompleto" placeholder="Nome">
+          <input id="nomeCompleto" type="text" class="cadastro-form__input" formControlName="nomeCompleto"
+            placeholder="Nome">
           @if (dadosPessoaisForm.get('nomeCompleto')?.invalid && dadosPessoaisForm.get('nomeCompleto')?.touched) {
           <div class="cadastro-form__error">
             Nome completo é obrigatório.
@@ -23,12 +24,13 @@
         <div class="cadastro-form__field">
           <label for="cpf" class="cadastro-form__label">CPF</label>
           <small class="small">Digite somente os números.</small>
-          <input id="cpf" type="text" class="cadastro-form__input" placeholder="000.000.000-00" formControlName="cpf" maxlength="11">
+          <input id="cpf" type="text" class="cadastro-form__input" placeholder="000.000.000-00" formControlName="cpf"
+            maxlength="11">
           <div *ngIf="dadosPessoaisForm.get('cpf')?.invalid && dadosPessoaisForm.get('cpf')?.touched"
-              class="cadastro-form__error">
-              <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['required']">CPF é obrigatório. </span>
-              <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['cpfInvalido']">CPF é inválido.</span>
-            </div>
+            class="cadastro-form__error">
+            <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['required']">CPF é obrigatório. </span>
+            <span *ngIf="dadosPessoaisForm.get('cpf')?.errors?.['cpfInvalido']">CPF é inválido.</span>
+          </div>
         </div>
 
         <div class="cadastro-form__row">
@@ -70,12 +72,19 @@
         </div>
 
         <div class="cadastro-form__field ">
-          <label for="email" class="cadastro-form__label">E-mail</label>
-          <input id="email" type="text" class="cadastro-form__input" formControlName="email" placeholder="E-mail">
+          <label for="email" class="cadastro-form__label">Email</label>
+          <div class="input-container">
+            <input id="email" type="text" class="cadastro-form__input" formControlName="email" placeholder="E-mail"
+              [ngClass]="{'cadastro-form__input--error': dadosPessoaisForm.get('email')?.invalid && dadosPessoaisForm.get('email')?.touched,
+                         'cadastro-form__input--pending': dadosPessoaisForm.get('email')?.pending}">
+          </div>
           @if (dadosPessoaisForm.get('email')?.invalid && dadosPessoaisForm.get('email')?.touched) {
           <div class="cadastro-form__error">
             <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['required']">Email é obrigatório</span>
             <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['email']">Email inválido</span>
+            <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['emailExistente']" class="cadastro-form__error cadastro-form__error--async">
+                Este email já está cadastrado
+              </span>
           </div>
           }
         </div>
@@ -94,7 +103,8 @@
 
           <div class="cadastro-form__field cadastro-form__field--half">
             <label for="confirmaSenha" class="cadastro-form__label">Repita a senha</label>
-            <input id="confirmaSenha" type="password" class="cadastro-form__input" formControlName="confirmaSenha" placeholder="Senha">
+            <input id="confirmaSenha" type="password" class="cadastro-form__input" formControlName="confirmaSenha"
+              placeholder="Senha">
             <div
               *ngIf="dadosPessoaisForm.get('confirmaSenha')?.invalid && dadosPessoaisForm.get('confirmaSenha')?.touched"
               class="cadastro-form__error">
