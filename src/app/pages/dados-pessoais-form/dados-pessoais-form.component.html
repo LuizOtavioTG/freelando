@@ -82,9 +82,10 @@
           <div class="cadastro-form__error">
             <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['required']">Email é obrigatório</span>
             <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['email']">Email inválido</span>
-            <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['emailExistente']" class="cadastro-form__error cadastro-form__error--async">
-                Este email já está cadastrado
-              </span>
+            <span *ngIf="dadosPessoaisForm.get('email')?.errors?.['emailExistente']"
+              class="cadastro-form__error cadastro-form__error--async">
+              Este email já está cadastrado
+            </span>
           </div>
           }
         </div>
