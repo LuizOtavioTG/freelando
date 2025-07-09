@@ -31,7 +31,7 @@ export const senhasIguaisValidator: ValidatorFn = (control: AbstractControl): Va
     CommonModule,
     ReactiveFormsModule,
     ButtonComponent,
-    
+
   ],
   templateUrl: './dados-pessoais-form.component.html',
   styleUrls: ['./dados-pessoais-form.component.scss']
@@ -46,14 +46,13 @@ export class DadosPessoaisFormComponent implements OnInit {
   carregandoCidades$ = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private fb: FormBuilder,
     private router: Router,
     private cadastroService: CadastroService,
     private ibgeService: IbgeService,
     private emailValidatorService: EmailValidatorService,
     private dynamicFormService: DynamicFormService
   ) {
-    this.dynamicFormService.registerFormConfig('dadosPessoaisForm', getDadosPessoaisConfig)
+    this.dynamicFormService.registerFormConfig('dadosPessoais', getDadosPessoaisConfig)
   }
 
   ngOnInit(): void {
@@ -75,7 +74,7 @@ export class DadosPessoaisFormComponent implements OnInit {
   onProximo(): void {
     if (this.dadosPessoaisForm.valid) {
       this.salvarDadosAtuais();
-      this.router.navigate(['/cadastro/confirmacao']);
+      this.router.navigate(['cadastro/perfil']);
     } else {
       this.dadosPessoaisForm.markAllAsTouched();
     }
@@ -102,6 +101,16 @@ export class DadosPessoaisFormComponent implements OnInit {
 
   getFieldByName(name: string): FormFieldBase {
     return this.formConfig.fields.find(field => field.formControlName === name) || {} as FormFieldBase;
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.dadosPessoaisForm.get(controlName);
+    return !!(control && control.invalid && control.touched);
+  }
+
+  hasError(controlName: string, errorKey: string): boolean {
+    const control = this.dadosPessoaisForm.get(controlName);
+    return !!(control && control.errors?.[errorKey]);
   }
 
   private carregarEstados(): void {
